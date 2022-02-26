@@ -1,85 +1,49 @@
 const express = require('express');
 const router = express.Router();
 
-// QUERY PARAMS
-// localhost:3000/get-query-1?myCoolVar=24&xyz=hiFunctionUP
-router.get("/get-query-1", function (req, res) {
-    let data = req.query
-    console.log(data)
-    res.send({ data: data, status: true })
-})
+// Problem1:  players array outside( on the top ) of the api( so that data is maintained across api hits )
+// Write a POST /players api that creates a new player ( that saves a player’s details and doesn’t allow saving the data of a player with a name that already exists in the data)
 
+let players = [];
+router.post('/players', function(req, res){
+    let player = req.body
+    let playerName = player.name
+    for (let i=0; i<players.length; i++){
+        if(players[i].name == playerName){
+            res.send("player already exist")
+        } 
+    }
+    players.push(player)
+    console.log("Here is the player array", player)
+    res.send(players)
+});
 
-// take marks in req.query variable named "marks" and send "pass" if > 40 else "fail"
-router.get("/get-query-2", function (req, res) {
-    let marks = req.query.marks
-    // { marks: '80'}
+// Problem2:
 
-    let result = marks > 40 ? "pass" : "fail"
-    // let result = "fail"
-    // if (marks> 40) { result = "pass" }
-    // // else { result = "fail" }
-
-    res.send({ result: result, status: true })
-})
-
-//query params are also available in post request
-router.post("/post-query-1", function (req, res) {
-    let data = req.query
-    console.log(data)
-    res.send({ result: data, status: true })
-})
-
-let myArr = [23, 45, 67, 281394, 32424, 423, 24, 42323, 4, 234, 12, 34]
-//filter out all the numbers that are greater than input( input is received from query params)
-router.post("/post-query-2", function (req, res) {
-    //CODE HERE
-    let input= req.query.input
-    let finalArr= myArr.filter( ele => ele > input)
-    // let finalArr=[]
-    // for (i=0 ; i<myArr.length; i++) {
-    //     if ( myArr[i] > input )      finalArr.push(myArr[i]) 
-    // }
-    res.send({ result: finalArr , status: true })
-})
-
-
-// ASSIGNMENT:
-// you will be given an array of persons ( i.e an array of objects )..each person will have  a {name: String , age: Number, votingStatus: true/false(Boolean)}
-// take input in query param as votingAge..and for all the people above that age, change votingStatus as true
-// also return an array consisting of only the person that can vote
-
-//  take this as sample for array of persons:
-// let persons= [
-//     {
-//     name: "PK",
-//     age: 10,
-//     votingStatus: false
-// },
-// {
-//     name: "SK",
-//     age: 20,
-//     votingStatus: false
-// },
-// {
-//     name: "AA",
-//     age: 70,
-//     votingStatus: false
-// },
-// {
-//     name: "SC",
-//     age: 5,
-//     votingStatus: false
-// },
-// {
-//     name: "HO",
-//     age: 40,
-//     votingStatus: false
-// }
-// ]
-
-
-
-
+router.post('/players/:playerName/bookings/:bookingId', function(req, res){
+   let name = req.params.playerName
+   let isPresent = false;
+   for (let i=0; i<players.length; i++){
+       if (players[i].name == name){
+           isPresent = true;
+       }
+   }
+   if(!isPresent){
+       res.send("player not present")
+   }
+   let booking = req.body;
+   let bookingId = req.params.bookingId;
+   for (let i=0; i<players.bookingId; i++){
+       if (players[i].name == name){
+           for (j=0; j<players[i].booking.length; i++){
+               if (players[i].booking[j].bookingNumber == bookingId){
+                   res.send("booking with similar Id already exists")
+               }
+           }
+           players[i].bookings.push(booking)
+       }
+   }
+   res.send(players)
+});
 
 module.exports = router;
