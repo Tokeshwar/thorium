@@ -35,7 +35,7 @@ const deleteBooks= async function (req, res) {
     // let data = req.body 
     let allBooks= await BookModel.updateMany( 
         { authorName: "FI"} , //condition
-        { $set: {isDeleted: true} }, //update in data
+        { $set: {isDeleted: true} }, //update in dat
         { new: true } ,
      )
      
