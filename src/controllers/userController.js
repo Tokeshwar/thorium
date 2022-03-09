@@ -84,7 +84,16 @@ const updateUser = async function (req, res) {
   res.send({ status: updatedUser, data: updatedUser });
 };
 
+const deleteUser = async function(req,res){
+  let token = req.headers["x-auth-token"];
+  if (!token) return res.send({ status: false, msg: "token must be present" });
+  let userId = req.params.userId;
+  let userDel = await userModel.findOneAndUpdate({_id: userId},{$set:{isdeleted: true}},{$new:true});
+  res.send({status:true, data:userDel})
+};
+
 module.exports.createUser = createUser;
 module.exports.getUserData = getUserData;
 module.exports.updateUser = updateUser;
 module.exports.loginUser = loginUser;
+module.exports.deleteUser = deleteUser
