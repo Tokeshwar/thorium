@@ -12,6 +12,8 @@ router.get("/test-me", function (req, res) {
 router.get("/cowin/states", CowinController.getStates)
 router.get("/cowin/districtsInState/:stateId", CowinController.getDistricts)
 router.get("/cowin/getByPin", CowinController.getByPin)
+router.get("/cowin/getById", CowinController.getDistrictById)
+router.get("/getSortCities", CowinController.getSortCities)
 
 router.post("/cowin/getOtp", CowinController.getOtp)
 
