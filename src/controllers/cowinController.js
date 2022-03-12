@@ -78,8 +78,50 @@ let getOtp = async function (req, res) {
     }
 }
 
+let getDistrictById = async function(req, res){
+    try{
+        let id = req.query.district_id
+        let date = req.query.date
+        console.log(`this is query params: ${id} ${date}`)
+        let options = {
+            method: "get",
+            url: `https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByDistrict?district_id=${id}&date=${date}`
+        }
+        let result= await axios(options)
+        console.log(result.data)
+        res.status(200).send({msg: result.data})
+    } catch{err}{
+        console.log(err)
+        res.status(500).send({msg: err.message})
+    }
+}
 
+let getSortCities = async function(req, res){
+    try{
+        let cities = ["Bengaluru", "Mumbai", "Delhi", "Kolkata", "Chennai", "London", "Moscow"]
+        let cityObjArr = []
+
+        for(let i=0; i<cities.length; i++){
+
+            let obj = {city: cities[i]}
+            let resp = await axios.get(`http://api.openweathermap.org/data/2.5/weather?q=${cities[i]}&appid=0442519f5733f85e386723eeb5f76ba7`)
+            console.log(resp.data.main.temp)
+        
+            obj.temp= resp.data.main.temp
+            cityObjArr.push(obj)
+        }
+            let sorted = cityObjArr.sort( function(a, b) {return a.temp - b.temp })
+
+            console.log(sorted)
+            res.status(200).send({status: true, data:sorted})
+        } catch (err){
+            console.log(err)
+            res.status(500).send({status: false, msg: "server error"})
+        }
+    }
 module.exports.getStates = getStates
 module.exports.getDistricts = getDistricts
 module.exports.getByPin = getByPin
 module.exports.getOtp = getOtp
+module.exports.getDistrictById = getDistrictById
+module.exports.getSortCities = getSortCities
