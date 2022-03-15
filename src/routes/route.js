@@ -1,13 +1,15 @@
-const express = require('express');
-const router = express.Router();
+const express = require('express'); 
+const router = express.Router(); 
 
-router.get('/students/:name', function(req, res) {
-    let studentName = req.params.name
-    console.log(studentName)
-    res.send(studentName)
-})
+const authorController = require('../controller/authorController'); 
+const blogController = require('../controller/blogController'); 
 
+router.post("/createAuthor", authorController.createAuthor)
+router.post("/crtBlog", blogController.createBlog)
 
-
+router.get("/getBlog", blogController.getBlog)
+router.put("/updateBlog/:blogId", blogController.updateBlog)
+router.delete("/deleteBlogById/blogId", blogController.deleteBlogById)
+router.delete("/deleteByQueryParams", blogController.deletedByQueryParams)
 
 module.exports = router;
