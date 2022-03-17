@@ -1,16 +1,28 @@
-const express = require('express');
+const express = require('express'); 
+const router = express.Router(); 
 
-const router = express.Router();
+const authorController = require('../controller/authorController'); 
+const blogController = require('../controller/blogController'); 
+const authorLogin = require('../controller/loginController');
+const middleware = require('../middlewares/middleware');
 
 
-const allController = require('../controllers/allController')
+router.post("/createAuthor", authorController.createAuthor)
+router.post("/login", authorLogin.login)
 
+router.post("/crtBlog", middleware.authenticate, blogController.createBlog)
 
-
-router.post('/createNewAuthor', allController.createNewAuthor)
-router.post('/createNewBook', allController.createNewBook)
-router.get('/allBooks', allController.allBooks)
-router.get('/updatedBookPrice', allController.upadatedBookPrice)
-router.get('/authorsName', allController.authorsName)
+router.get("/getBlogs", middleware.authenticate, middleware.authorize, blogController.getBlogs)
+router.put("/updateBlog/:blogId", middleware.authenticate, middleware.authorize, blogController.updateBlog)
+router.delete("/deleteBlogById/:blogId",middleware.authenticate, middleware.authorize, blogController.deleteBlogById)
+router.delete("/deleteByQueryParams",middleware.authenticate, middleware.authorize, blogController.deletedByQueryParams)
+router.get("/getAllBlogs", blogController.getAllBlogs)
 
 module.exports = router;
+
+
+
+
+
+
+
