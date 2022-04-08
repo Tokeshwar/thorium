@@ -12,4 +12,4 @@ router.get("/:urlCode" ,UrlControlle.redirect)
 
 module.exports = router;
 
-//
+

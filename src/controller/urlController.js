@@ -5,20 +5,28 @@ const redis = require("redis")
 
 const { promisify } = require("util");
 
-//Connect to redis
+
+//  Connect to redis
+
+
 const redisClient = redis.createClient(
     16368,
     "redis-16368.c15.us-east-1-2.ec2.cloud.redislabs.com",
     { no_ready_check: true }
 );
+
+
 redisClient.auth("Y52LH5DG1XbiVCkNC2G65MvOFswvQCRQ", function (err) {
     if (err) throw err;
 });
+
 
 redisClient.on("connect", async function () {
     console.log("Connected to Redis..");
 });
 
+
+//...................................validation.........................................................
 
 
 const isValid = function (value) {
@@ -26,14 +34,22 @@ const isValid = function (value) {
     if (typeof (value) === "string" && (value).trim().length > 0) return true
 }
 
+
 const SET_ASYNC = promisify(redisClient.SET).bind(redisClient);
 const GET_ASYNC = promisify(redisClient.GET).bind(redisClient);
 
+
+// ................................Create short Url......................................................
+
+
 const urlShortener = async (req, res) => {
+
     try {
+
         const baseUrl = 'http://localhost:3000'
 
         const data = req.body
+
         if (Object.keys(data) == 0) {
             return res.status(400).send({ status: false, message: "Please provide Data" })
         }
@@ -45,24 +61,23 @@ const urlShortener = async (req, res) => {
         }
 
         if (!validUrl.isUri(longUrl)) {
-            return res.status(401).send({ status: false, message: "Please provide valid Url" })
+            return res.status(400).send({ status: false, message: "Please provide valid Url" })
         }
 
         const urlGenerated = shortid.generate()
+
         const urlCode = urlGenerated.trim().toLowerCase()
 
         let url = await URLModel.findOne({ longUrl }).select({ _id: 0, __v: 0 })
 
         if (url) {
-            res.status(200).send({ status: true, data: url })
+            res.status(200).send({ status: true, message: "Short Url successfully created", data: url })
         }
 
         else {
+
             const shortUrl = baseUrl + '/' + urlCode
 
-            //data['shortUrl'] = shortUrl
-            //data['urlCode'] = urlCode
-            //const a1 = { longUrl, shortUrl, urlCode }
             const obj = {
                 urlCode,
                 longUrl,
@@ -70,30 +85,37 @@ const urlShortener = async (req, res) => {
             }
 
             const urlData = await URLModel.create(obj)
-            //const n1 = { longUrl: urlData.longUrl, shortUrl: urlData.shortUrl, urlCode: urlData.urlCode }
 
-            return res.status(201).send({ status: true, data: urlData })
+            const newData = { longUrl: urlData.longUrl, shortUrl: urlData.shortUrl, urlCode: urlData.urlCode }
+
+            return res.status(201).send({ status: true, data: newData })
         }
 
     }
     catch (error) {
+
         console.log(error)
         res.status(500).send({ status: false, message: error.message })
     }
 }
 
+
+// .................................Get Url.....................................................
+
+
 const redirect = async function (req, res) {
+
     try {
+
         const urlCode = req.params.urlCode;
 
-        if (Object.keys(urlCode) == 0) { return res.status(400).send({ status: false, message: 'Please provide URL Code in Params' }) }
+        let cacheData = await GET_ASYNC(`${urlCode}`)
 
-        let cachedMemory = await GET_ASYNC(`${urlCode}`)
-        if (cachedMemory) { return res.status(302).redirect(JSON.parse(cachedMemory)) }
+        if (cacheData) { return res.status(302).redirect(JSON.parse(cacheData)) }
 
         const URL = await URLModel.findOne({ urlCode: urlCode })
 
-        if (!URL) { return res.status(404).send({ status: false, message: 'No URL found with this URL Code. Please check input and try again' }) }
+        if (!URL) { return res.status(404).send({ status: false, message: 'No such Url found' }) }
 
         await SET_ASYNC(`${urlCode}`, JSON.stringify(URL.longUrl));
 
@@ -102,9 +124,11 @@ const redirect = async function (req, res) {
     }
 
     catch (error) {
+
         console.log(error)
         return res.status(500).send({ message: error.message })
     }
 }
 
-module.exports = {urlShortener, redirect}
+
+module.exports = { urlShortener, redirect }

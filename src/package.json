@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "express": "^4.17.3",
+    "is-uri": "^1.2.4",
     "mongoose": "^6.2.10",
     "nodemon": "^2.0.15",
     "redis": "^3.0.0",
