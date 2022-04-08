@@ -71,7 +71,7 @@ const urlShortener = async (req, res) => {
         let url = await URLModel.findOne({ longUrl }).select({ _id: 0, __v: 0 })
 
         if (url) {
-            res.status(200).send({ status: true, message: "Short Url successfully created", data: url })
+            res.status(200).send({ status: true, data: url })
         }
 
         else {
