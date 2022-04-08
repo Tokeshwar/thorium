@@ -88,7 +88,7 @@ const urlShortener = async (req, res) => {
 
             const newData = { longUrl: urlData.longUrl, shortUrl: urlData.shortUrl, urlCode: urlData.urlCode }
 
-            return res.status(201).send({ status: true, data: newData })
+            return res.status(201).send({ status: true,message:"succefull",data: newData })
         }
 
     }

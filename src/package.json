@@ -7,6 +7,7 @@
     "redis": "^3.0.0",
     "shortid": "^2.2.16",
     "util": "^0.12.4",
-    "valid-url": "^1.0.9"
+    "valid-url": "^1.0.9",
+    "validator": "^13.7.0"
   }
 }
